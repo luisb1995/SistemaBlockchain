@@ -317,7 +317,24 @@ contract VotingSystem {
     {
         return elections[_electionId].hasVoted[_voter];
     }
-    
+    function getUserVote(uint256 _electionId, address _voter)
+    public
+    view
+    electionExists(_electionId)
+    returns (uint256 candidateId)
+    {
+        Election storage election = elections[_electionId];
+        require(election.hasVoted[_voter], "El usuario no ha votado en esta eleccion");
+
+        // Buscar el voto dentro del array de votos
+        for (uint256 i = 0; i < election.votes.length; i++) {
+            if (election.votes[i].voter == _voter) {
+                return election.votes[i].candidateId;
+            }
+        }
+
+        revert("Voto no encontrado para este usuario");
+    }
     function getActiveElections() public view returns (uint256[] memory) {
         return activeElectionIds;
     }
